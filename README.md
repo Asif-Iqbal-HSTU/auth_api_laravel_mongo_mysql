@@ -1,66 +1,276 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# User Auth API project with Laravel, MySQL and MongoDB.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## About Project
 
-## About Laravel
+API to create user with credentials and profile data. And to login with credentials and introducing JWT token.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
+Make sure `mongo-php-driver` is set.  
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+If not, go to [this link](https://github.com/mongodb/mongo-php-driver/releases) and download Asset according to your PHP version and your PC's configuration.   
 
-## Learning Laravel
+For example, if your PC is 64 bit and you are using PHP version 8.3 non-thread-safe, then you can download `php_mongodb-1.20.1-8.3-nts-vs16-x64_86.zip`. Then extract it and copy the `php_mongodb.dll` file and paste it to your PC's `php\ext` folder.  
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+And on the `php.ini`, please make sure if `extension=php_mongodb.dll` is added or not. If not, please include it first.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Project Cloning
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+$ git clone https://github.com/Asif-Iqbal-HSTU/auth_api_laravel_mongo_mysql.git
+```
 
-## Laravel Sponsors
+## Install Packages
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+# Go to Directory
+$ cd auth_api_laravel_mongo_mysql
 
-### Premium Partners
+# installing dependencies
+$ composer install
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# installing dependencies 
+$ npm install
+```
 
-## Contributing
+## JWT Package
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Publish Vendor
+$ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
 
-## Code of Conduct
+# Secret key Generate
+$ php artisan jwt:secret
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Set Up Database Connections:
 
-## Security Vulnerabilities
+```bash
+# copy .env on windows
+$ copy .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# copy .env on Linux
+$ cp .env.example .env
 
-## License
+# Generate key
+$ php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# MySQL Configuration on .env file
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
+
+DB_CONNECTION_MONGODB=mongodb
+DB_URI=mongodb://localhost:27017
+
+# Run migrations
+$ php artisan migrate
+```
+
+## Update `config/database.php`
+Add the following lines to configure MongoDB: under 'connections' add the 'mongodb' configuration
+```bash
+
+'connections' => [
+    'mongodb' => [
+        'driver' => 'mongodb',
+        'dsn' => env('DB_URI'),
+        'database' => 'user_auth_system',
+    ],
+],
+```
+
+## Update `config/auth.php`
+Check the config/auth.php file to ensure the driver for the api guard is set to jwt:
+```bash
+'guards' => [
+    'api' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
+    ],
+],
+```
+
+## Run the server
+
+```bash
+# Run Server
+$ php artisan serve
+```
+
+## API Endpoint
+
+Here are two api endpoints '/api/create-user' and '/api/login'.   
+For both API, the Headers should include:
+```bash
+{
+  "Content-Type": "application/json",
+  "Accept": "application/json"
+}
+```
+
+### **Create User**
+Creates a new user and stores data in MySQL and MongoDB.   
+Go to Postman and set "POST" route method.
+
+```bash
+# POST API
+http://127.0.0.1:8000/api/create-user
+```
+
+
+#### Demo data
+Use the following JSON to test the API.
+
+```bash
+{
+  "username": "testuser",
+  "role": "admin",
+  "password": "password123",
+  "profile": {
+    "name": "John Doe",
+    "email": "johndoe@example.com",
+    "address": "123 Main Street, City, Country"
+  }
+}
+```
+
+#### Expected Response (Success)
+If everything is configured correctly, you should receive a response similar to this:
+
+```bash
+{
+  "success": true,
+  "message": "User created successfully",
+  "user_id": 1
+}
+```
+
+#### Possible Error Responses
+1. Validation Error:
+
+```bash
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "username": ["The username has already been taken."]
+  }
+}
+
+```
+
+2. Database Connection Error:
+
+```bash
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "username": ["The username has already been taken."]
+  }
+}
+
+```
+---
+### **Login**
+Checks Username and password. Authenticates if the credentials are matched. It also introduces a JWT token.  
+Go to Postman and set "POST" route method.
+
+```bash
+# POST API
+http://127.0.0.1:8000/api/login
+```
+
+
+#### Demo data
+Use the following JSON to test the API.
+
+```bash
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+```
+
+#### Expected Response (Success)
+If everything is configured correctly, you should receive a response similar to this:
+
+```bash
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "id": 1,
+    "username": "testuser",
+    "role": "admin",
+    "profile": {
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "address": "123 Main Street, City, Country"
+    }
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+```
+
+#### **Possible Error Responses**
+1. Invalid Username:
+
+```bash
+{
+  "success": false,
+  "message": "Invalid username or password"
+}
+
+```
+
+2. Invalid Password:
+
+```bash
+{
+  "success": false,
+  "message": "Invalid username or password"
+}
+```
+
+3. Validation Error:
+
+```bash
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "username": ["The username field is required."],
+    "password": ["The password field is required."]
+  }
+}
+
+```
+
+4. JWT Token Generation Error
+
+```bash
+{
+  "success": false,
+  "message": "Could not generate token"
+}
+
+```
+
+
+---
+
+### **Testing**
+- **Verify `/api/create-user`**:
+  - Ensure a new user is created in MySQL and the corresponding profile is stored in MongoDB.
+- **Verify `/api/login`**:
+  - Test with valid and invalid credentials to ensure proper validation.
+
+## Stay in touch
+- Author - [Asif Iqbal](https://www.linkedin.com/in/md-asif-iqbal-624310155/)
+- WhatsApp - [+8801725215111](https://api.whatsapp.com/send/?phone=8801725215111)
+- Email- asif.iqbal.hstu@gmail.com
+
